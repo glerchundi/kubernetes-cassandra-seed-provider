@@ -1,0 +1,19 @@
+sudo: false
+language: java
+jdk:
+- openjdk7
+- openjdk8
+- oraclejdk7
+- oraclejdk8
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: "ncbP+6ZAqQtLH/0PYNV0h5XFNejJL0aVLZ5DJVJdRkeilR+yNxDB2THH4nOsxME72XLDNLN5rKrFLwlJwLidnsvZFOP3yfr9D9OGyP+ySb9TL7O8zjvExyiy/ZZu1IqYtx6bBTjxeuqGKsFFmFcIe9DcHJEW9pjquROz0k0HlahktiNrZ7YhgzB4z4iqAzmPaSNl2Qs5bruT2fu52eEf/wX0G59otawikeTwtnU9IPstRzOd6JAwWe8xkXuqXbRYcaVoxkzJq4LAKzqgI3K206Wk49bhAowmguO1tH9e2/2kAHVnb5KsImeyVqwuURIkkJcxaWYKPl5Wz+kclkzCsQgO7vKKRBDsV0iGhcaAQ1L1JEuSmICjOIkeCZ4id8rYPLMu4+kU3PY0eWhaBpOsYTCyhlLrebZKpBqHqSNo7+fuEfalqdlx3VTkewkTWYzsDO1NZL9sipnoZQprRwtEsGMkYW5Xajs93ziLnxt3xtl3eELhm2iQ8xEd2hoqXniFbPoYId0p/23rVVsRIucuXrMMEMuqcXQU67G/l7Tym55HEbPiM0r45tzUGEQbKwKMTbxC8/L79GIf+I2WebyhRCB5qZmEYwry9IxuGQcKnAPCzgSbVrWbscwcxIPkd/DzYLaeX7SwVoU5xvEboiRiYeSjCrZefz2EHrA07qmTyes="
+  file:
+    - $HOME/target/kubernetes-cassandra-*.jar
+  file_glob: true
+  on:
+    repo: glerchundi/kubernetes-cassandra-seed-provider
+    branch: master
+    tags: true
