@@ -1,1 +1,1 @@
-# kubernetes-cassandra-seed-provider
+# kubernetes-cassandra-seed-provider [![Build Status](https://travis-ci.org/glerchundi/kubernetes-cassandra-seed-provider.svg?branch=master)](https://travis-ci.org/glerchundi/kubernetes-cassandra-seed-provider)
