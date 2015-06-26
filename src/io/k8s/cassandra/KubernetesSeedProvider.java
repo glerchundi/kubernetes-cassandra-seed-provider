@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -74,38 +75,37 @@ public class KubernetesSeedProvider implements SeedProvider {
         // These are used as a fallback, if we get nothing from k8s.
         String[] hosts = params.get("seeds").split(",", -1);
         defaultSeeds = new ArrayList<InetAddress>(hosts.length);
-        for (String host : hosts)
-	    {
-		try {
-		    defaultSeeds.add(InetAddress.getByName(host.trim()));
-		}
-		catch (UnknownHostException ex)
-		    {
-			// not fatal... DD will bark if there end up being zero seeds.
-			logger.warn("Seed provider couldn't lookup host " + host);
-		    }
-	    }
-	// TODO: Load the CA cert when it is available on all platforms.
-	trustAll = new TrustManager[] {
-	    new X509TrustManager() {
-		public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-		public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-		public X509Certificate[] getAcceptedIssuers() { return null; }
-	    }
-	};
-	trustAllHosts = new HostnameVerifier() {
-		public boolean verify(String hostname, SSLSession session) {
-		    return true;
-		}
+        for (String host : hosts) {
+            try {
+                defaultSeeds.add(InetAddress.getByName(host.trim()));
+            } catch (UnknownHostException ex) {
+                // not fatal... DD will bark if there end up being zero seeds.
+                logger.warn("Seed provider couldn't lookup host " + host);
+            }
+        }
+
+        // TODO: Load the CA cert when it is available on all platforms.
+        trustAll = new TrustManager[] {
+            new X509TrustManager() {
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                public X509Certificate[] getAcceptedIssuers() { return null; }
+            }
+        };
+
+        trustAllHosts = new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) { return true; }
 	    };
     }
 
     public List<InetAddress> getSeeds() {
         List<InetAddress> list = new ArrayList<InetAddress>();
+        
         String host = getEnvOrDefault("CASSANDRA_KUBEPROVIDER_MASTER_URL", DEFAULT_MASTER_URL);
         String serviceName = getEnvOrDefault("CASSANDRA_KUBEPROVIDER_SERVICE", DEFAULT_SERVICE);
         String podNamespace = getEnvOrDefault("CASSANDRA_KUBEPROVIDER_NAMESPACE", DEFAULT_NAMESPACE);
         String path = String.format("/api/v1/namespaces/%s/endpoints/", podNamespace);
+        
         try {
             String token = getServiceAccountToken();
 
@@ -149,8 +149,12 @@ public class KubernetesSeedProvider implements SeedProvider {
     }
 
     // Simple main to test the implementation
-    public static void main(String[] args) {
-        SeedProvider provider = new KubernetesSeedProvider(new HashMap<String, String>());
+    public static void main(String[] args) throws UnknownHostException {
+        SeedProvider provider = new KubernetesSeedProvider(
+            new HashMap<String, String>() {{
+                put("seeds", Inet4Address.getLocalHost().getHostAddress());
+            }}
+        );
         System.out.println(provider.getSeeds());
     }
 }
