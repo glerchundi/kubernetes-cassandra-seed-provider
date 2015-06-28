@@ -98,7 +98,7 @@ public class KubernetesSeedProvider implements SeedProvider {
 	    };
     }
 
-    private List<InetAddress> getSeeds() {
+    public List<InetAddress> getSeeds() {
         List<InetAddress> list = new ArrayList<InetAddress>();
         
         String host = getEnvOrDefault("CASSANDRA_KUBEPROVIDER_MASTER_URL", DEFAULT_MASTER_URL);
@@ -140,11 +140,13 @@ public class KubernetesSeedProvider implements SeedProvider {
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
             logger.warn("Request to kubernetes apiserver failed", ex); 
         }
+        
         if (list.size() == 0) {
-	    // If we got nothing, we might be the first instance, in that case
-	    // fall back on the seeds that were passed in cassandra.yaml.
-	    return defaultSeeds;
+	       // If we got nothing, we might be the first instance, in that case
+	       // fall back on the seeds that were passed in cassandra.yaml.
+	       return defaultSeeds;
         }
+
         return list;
     }
 
