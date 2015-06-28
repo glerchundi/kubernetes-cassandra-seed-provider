@@ -1,7 +1,6 @@
 package io.k8s.cassandra;
 
 import java.io.IOException;
-import java.lang.Thread;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -99,21 +98,7 @@ public class KubernetesSeedProvider implements SeedProvider {
 	    };
     }
 
-    public List<InetAddress> getSeeds() {
-        int count = 0;
-        int maxTries = 3;
-        while (true) {
-            try {
-                return getSeedsIteration();
-            } catch (Exception e) {
-                if (++count == maxTries) throw e;
-            }
-            // Sleep 1 second
-            try { Thread.sleep(1000); } catch (Exception e) {}
-        }
-    }
-
-    private List<InetAddress> getSeedsIteration() {
+    private List<InetAddress> getSeeds() {
         List<InetAddress> list = new ArrayList<InetAddress>();
         
         String host = getEnvOrDefault("CASSANDRA_KUBEPROVIDER_MASTER_URL", DEFAULT_MASTER_URL);
